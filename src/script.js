@@ -14,7 +14,7 @@ function startVideo() {
         video.srcObject = stream;
       })
       .catch(function (err) {
-        console.log("Something went wrong!");
+        console.log("Error : " + err);
       });
   }
 }
