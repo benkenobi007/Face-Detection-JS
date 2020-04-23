@@ -38,7 +38,7 @@ video.addEventListener('play', () => {
          const detections = await faceapi.detectAllFaces(video,
            new faceapi.SsdMobilenetv1Options())
            */
-      console.log(detections)
+      //console.log(detections)
       const resizedDetections = faceapi.resizeResults(detections, displaySize)
       canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
       faceapi.draw.drawDetections(canvas, resizedDetections)
