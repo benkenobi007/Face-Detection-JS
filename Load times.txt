@@ -1,0 +1,10 @@
+Load times
+ tinyface Model: 
+    - Allfaces - 7s (Chrome and firefox)
+    - SingleFace - 6.5 (Chrome and firefox)
+ SSD: 
+    - Allfaces - 18s
+    - SingleFace - 16s (Chrome and firefox)
+
+SSD is more accurate, but too slow - maybe use more sampling ?
+Use tinydetectors
