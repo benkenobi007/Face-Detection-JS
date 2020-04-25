@@ -11,3 +11,7 @@ body {
 canvas {
     position: absolute;
 }
+
+#container {
+    overflow: hidden;
+}
