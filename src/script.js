@@ -2,15 +2,11 @@ var video = document.getElementById('video')
 var container = document.getElementById('container')
 var isFaceDetectCalled = 0 // Flag for set time out
 
-//set video and container dimensions
-// container.style.width = window.innerWidth + "px"
-// video.style.height = window.innerHeight + "px"
-// video.style.width = window.innerWidth + "px"
 var displaySize = {
   width: video.width,
   height: video.height
 }
-// container.style.height = window.innerHeight + "px"
+
 
 Promise.all([
   faceapi.nets.tinyFaceDetector.loadFromUri('/models')
