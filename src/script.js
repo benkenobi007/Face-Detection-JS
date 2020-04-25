@@ -1,5 +1,6 @@
 var video = document.getElementById('video')
 var container = document.getElementById('container')
+var isFaceDetectCalled = 0 // Flag for set time out
 
 //set video and container dimensions
 // container.style.width = window.innerWidth + "px"
@@ -34,8 +35,10 @@ video.addEventListener('play', () => {
     const canvas = faceapi.createCanvasFromMedia(video)
     faceapi.matchDimensions(canvas, displaySize)
     document.body.append(canvas)
-    setInterval(async () => {
 
+    //Detect and crop function
+    async function detectAndCrop() {
+      isFaceDetectCalled = 1
       const detections = await faceapi.detectSingleFace(video,
         new faceapi.TinyFaceDetectorOptions())
 
@@ -43,11 +46,16 @@ video.addEventListener('play', () => {
          const detections = await faceapi.detectAllFaces(video,
            new faceapi.SsdMobilenetv1Options())
            */
-      console.log('xmin : ' + detections._box._x)
-      console.log('ymin : ' + detections._box._y)
-      console.log('width : ' + detections._box._width)
-      console.log('height : ' + detections._box._height)
 
+      try {
+        console.log('xmin : ' + detections._box._x)
+        console.log('ymin : ' + detections._box._y)
+        console.log('width : ' + detections._box._width)
+        console.log('height : ' + detections._box._height)
+      } catch (err) {
+        console.log(err)
+        setTimeout(detectAndCrop, 1000)
+      }
       const resizedDetections = faceapi.resizeResults(detections, displaySize)
 
       console.log('xmin : ' + resizedDetections._box._x)
@@ -60,6 +68,7 @@ video.addEventListener('play', () => {
       var detectWidth = resizedDetections._box._width
       var detectHeight = resizedDetections._box._height
 
+      //Crop
       var croppedSquareLength = detectWidth > detectHeight ? detectWidth : detectHeight
       container.style.width = croppedSquareLength + 50 + "px"
       container.style.height = croppedSquareLength + 50 + "px"
@@ -68,10 +77,15 @@ video.addEventListener('play', () => {
       video.style.marginLeft = -detectX + "px"
       video.style.marginTop = (-detectY + 50) + "px"
 
+      setTimeout(detectAndCrop, 1000)
+
+      //Draw detections
       // canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
       // faceapi.draw.drawDetections(canvas, resizedDetections)
 
-    }, 1000)
+    }
+
+    detectAndCrop()
   }
 
 )
