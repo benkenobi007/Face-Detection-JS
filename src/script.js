@@ -1,12 +1,10 @@
 var video = document.getElementById('video')
 var container = document.getElementById('container')
-var isFaceDetectCalled = 0 // Flag for set time out
 
 var displaySize = {
   width: video.width,
   height: video.height
 }
-
 
 Promise.all([
   faceapi.nets.tinyFaceDetector.loadFromUri('/models')
@@ -32,47 +30,45 @@ video.addEventListener('play', () => {
     faceapi.matchDimensions(canvas, displaySize)
     document.body.append(canvas)
 
+    var webWorker = new Worker('src/faceDetectWorker.js')
+
+    var canvas_frame = document.createElement('canvas');
+    canvas_frame.height = video.height
+    canvas_frame.width = video.width
+    var ctx = canvas_frame.getContext('2d');
+
     //Detect and crop function
     async function detectAndCrop() {
-      isFaceDetectCalled = 1
-      const detections = await faceapi.detectSingleFace(video,
-        new faceapi.TinyFaceDetectorOptions())
+      console.log('creating canvas, calling worker')
+      ctx.drawImage(video, 0, 0, canvas_frame.width, canvas_frame.height)
+      var frame = ctx.getImageData(0, 0, canvas_frame.width, canvas_frame.height)
 
-      /*
-         const detections = await faceapi.detectAllFaces(video,
-           new faceapi.SsdMobilenetv1Options())
-           */
-
+      var message = {
+        videoFrame: frame
+      }
       try {
-        console.log('xmin : ' + detections._box._x)
-        console.log('ymin : ' + detections._box._y)
-        console.log('width : ' + detections._box._width)
-        console.log('height : ' + detections._box._height)
+        webWorker.postMessage(message)
+
+        webWorker.onmessage = (e) => {
+          if (e.boundingBox !== 'undefined') {
+            var detectX = e.boundingBox.x
+            var detectY = e.boundingBox.y
+            var detectWidth = e.boundingBox.width
+            var detectHeight = e.boundingBox.height
+
+            //Crop
+            var croppedSquareLength = detectWidth > detectHeight ? detectWidth : detectHeight
+            container.style.width = croppedSquareLength + 50 + "px"
+            container.style.height = croppedSquareLength + 50 + "px"
+            container.style.borderRadius = "90%"
+
+            video.style.marginLeft = -detectX + "px"
+            video.style.marginTop = (-detectY + 50) + "px"
+          }
+        }
       } catch (err) {
         console.log(err)
-        setTimeout(detectAndCrop, 1000)
       }
-      const resizedDetections = faceapi.resizeResults(detections, displaySize)
-
-      console.log('xmin : ' + resizedDetections._box._x)
-      console.log('ymin : ' + resizedDetections._box._y)
-      console.log('width : ' + resizedDetections._box._width)
-      console.log('height : ' + resizedDetections._box._height)
-
-      var detectX = resizedDetections._box._x
-      var detectY = resizedDetections._box._y
-      var detectWidth = resizedDetections._box._width
-      var detectHeight = resizedDetections._box._height
-
-      //Crop
-      var croppedSquareLength = detectWidth > detectHeight ? detectWidth : detectHeight
-      container.style.width = croppedSquareLength + 50 + "px"
-      container.style.height = croppedSquareLength + 50 + "px"
-      container.style.borderRadius = "90%"
-
-      video.style.marginLeft = -detectX + "px"
-      video.style.marginTop = (-detectY + 50) + "px"
-
       setTimeout(detectAndCrop, 1000)
 
       //Draw detections
