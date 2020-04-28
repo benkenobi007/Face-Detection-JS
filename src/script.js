@@ -6,10 +6,11 @@ var displaySize = {
   height: video.height
 }
 
-Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri('/models')
-  //faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
-]).then(startVideo)
+// Promise.all([
+//   faceapi.nets.tinyFaceDetector.loadFromUri('/models')
+//   //faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
+// ]).then(startVideo)
+
 
 function startVideo() {
   if (navigator.mediaDevices.getUserMedia) {
@@ -25,10 +26,12 @@ function startVideo() {
   }
 }
 
+startVideo()
+
 video.addEventListener('play', () => {
-    const canvas = faceapi.createCanvasFromMedia(video)
-    faceapi.matchDimensions(canvas, displaySize)
-    document.body.append(canvas)
+    // const canvas = faceapi.createCanvasFromMedia(video)
+    // faceapi.matchDimensions(canvas, displaySize)
+    // document.body.append(canvas)
 
     var webWorker = new Worker('src/faceDetectWorker.js')
 

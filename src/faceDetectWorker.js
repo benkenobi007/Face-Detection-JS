@@ -1,3 +1,5 @@
+import * as faceapi from './face-api.min.js'
+
 // Web worker for face detection
 faceapi.nets.tinyFaceDetector.loadFromUri('/models')
 this.onmessage = async function handler(e) {
