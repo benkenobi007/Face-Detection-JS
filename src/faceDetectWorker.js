@@ -48,42 +48,42 @@ this.onmessage = async function handler(e) {
         // canvas.width = this.displaySize.width;
         // canvas.height = this.displaySize.height;
         canvas.getContext('bitmaprenderer').transferFromImageBitmap(frame);
-
-        const detections = await faceapi.detectSingleFace(canvas,
-            new faceapi.TinyFaceDetectorOptions())
-
-        this.console.log('detections: ', detections)
-        /*
-           const detections = await faceapi.detectAllFaces(frame,
-             new faceapi.SsdMobilenetv1Options())
-             */
-
         try {
+            const detections = await faceapi.detectSingleFace(canvas,
+                new faceapi.TinyFaceDetectorOptions())
+
+            this.console.log('detections: ', detections)
+            /*
+               const detections = await faceapi.detectAllFaces(frame,
+                 new faceapi.SsdMobilenetv1Options())
+                 */
+
+
             console.log('xmin : ' + detections._box._x)
             console.log('ymin : ' + detections._box._y)
             console.log('width : ' + detections._box._width)
             console.log('height : ' + detections._box._height)
-        } catch (err) {
-            console.log(err)
-        }
-        const resizedDetections = faceapi.resizeResults(detections, displaySize)
 
-        console.log('xmin : ' + resizedDetections.box.x)
-        console.log('ymin : ' + resizedDetections.box.y)
-        console.log('width : ' + resizedDetections.box.width)
-        console.log('height : ' + resizedDetections.box.height)
+            const resizedDetections = faceapi.resizeResults(detections, displaySize)
 
-        //Send Bounding box to main thread
-        var message = {
-            boundingBox: {
-                xmin: resizedDetections.box.x,
-                ymin: resizedDetections.box.y,
-                width: resizedDetections.box.width,
-                height: resizedDetections.box.height
+            console.log('xmin : ' + resizedDetections.box.x)
+            console.log('ymin : ' + resizedDetections.box.y)
+            console.log('width : ' + resizedDetections.box.width)
+            console.log('height : ' + resizedDetections.box.height)
+
+            //Send Bounding box to main thread
+            var message = {
+                boundingBox: {
+                    xmin: resizedDetections.box.x,
+                    ymin: resizedDetections.box.y,
+                    width: resizedDetections.box.width,
+                    height: resizedDetections.box.height
+                }
             }
+
+            this.postMessage(message)
+        } catch (err) {
+            this.console.log(err)
         }
-
-        this.postMessage(message)
-
     }
 }

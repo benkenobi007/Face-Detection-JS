@@ -55,8 +55,8 @@ video.addEventListener('play', () => {
 
         webWorker.onmessage = (e) => {
           if (e.data.boundingBox !== 'undefined') {
-            var detectX = e.data.boundingBox.x
-            var detectY = e.data.boundingBox.y
+            var detectX = e.data.boundingBox.xmin
+            var detectY = e.data.boundingBox.ymin
             var detectWidth = e.data.boundingBox.width
             var detectHeight = e.data.boundingBox.height
 
@@ -66,6 +66,8 @@ video.addEventListener('play', () => {
             container.style.height = croppedSquareLength + 50 + "px"
             container.style.borderRadius = "90%"
 
+            console.log('detectX = ', detectX)
+            console.log('detectY = ', detectY)
             video.style.marginLeft = -detectX + "px"
             video.style.marginTop = (-detectY + 50) + "px"
           }
