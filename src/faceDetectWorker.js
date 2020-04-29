@@ -1,10 +1,14 @@
+// VIP: Patch the faceapi.js to avoid env errors
 self.importScripts('faceEnvWorkerPatch.js')
+
 self.importScripts('face-api.min.js');
-var env = faceapi.env.createBrowserEnv();
-console.log("environment : ", faceapi.env)
-env.createCanvasElement = function () {
-    return new OffscreenCanvas(640, 480);
-};
+//var env = faceapi.env.createBrowserEnv();
+//console.log("environment : ", faceapi.env)
+// env.createCanvasElement = function () {
+//     return new OffscreenCanvas(640, 480);
+// };
+
+var loaded = false
 
 faceapi.nets.tinyFaceDetector.loadFromUri('/models').then(
     async () => {
@@ -22,13 +26,11 @@ faceapi.nets.tinyFaceDetector.loadFromUri('/models').then(
         }
 );
 
-var loaded = false
+
 
 this.onmessage = async function handler(e) {
 
     if (!loaded) {
-
-
         return;
     }
 
