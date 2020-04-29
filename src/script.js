@@ -35,29 +35,30 @@ video.addEventListener('play', () => {
 
     var webWorker = new Worker('src/faceDetectWorker.js')
 
-    var canvas_frame = document.createElement('canvas');
-    canvas_frame.height = video.height
-    canvas_frame.width = video.width
-    var ctx = canvas_frame.getContext('2d');
-
     //Detect and crop function
     async function detectAndCrop() {
       console.log('creating canvas, calling worker')
-      ctx.drawImage(video, 0, 0, canvas_frame.width, canvas_frame.height)
-      var frame = ctx.getImageData(0, 0, canvas_frame.width, canvas_frame.height)
 
+      const frame = await createImageBitmap(video);
+      //ctx.drawImage(video, 0, 0, canvas_frame.width, canvas_frame.height)
+      //var frame = ctx.getImageData(0, 0, canvas_frame.width, canvas_frame.height)
+      //console.log(frame)
       var message = {
-        videoFrame: frame
+        videoFrame: frame,
+        width: video.width,
+        height: video.height
       }
+      console.log('message:', message)
+
       try {
-        webWorker.postMessage(message)
+        webWorker.postMessage(message, [frame])
 
         webWorker.onmessage = (e) => {
-          if (e.boundingBox !== 'undefined') {
-            var detectX = e.boundingBox.x
-            var detectY = e.boundingBox.y
-            var detectWidth = e.boundingBox.width
-            var detectHeight = e.boundingBox.height
+          if (e.data.boundingBox !== 'undefined') {
+            var detectX = e.data.boundingBox.x
+            var detectY = e.data.boundingBox.y
+            var detectWidth = e.data.boundingBox.width
+            var detectHeight = e.data.boundingBox.height
 
             //Crop
             var croppedSquareLength = detectWidth > detectHeight ? detectWidth : detectHeight
