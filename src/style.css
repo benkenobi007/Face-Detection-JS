@@ -8,10 +8,11 @@ body {
     align-items: center;
 }
 
+/*
 canvas {
     position: absolute;
 }
-
+*/
 #container {
     overflow: hidden;
 }

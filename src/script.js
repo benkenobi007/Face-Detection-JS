@@ -29,9 +29,18 @@ function startVideo() {
 startVideo()
 
 video.addEventListener('play', () => {
-    // const canvas = faceapi.createCanvasFromMedia(video)
+    //const canvas = faceapi.createCanvasFromMedia(video)
     // faceapi.matchDimensions(canvas, displaySize)
     // document.body.append(canvas)
+    const canvas_box = document.createElement("canvas")
+    canvas_box.width = video.offsetWidth
+    canvas_box.height = video.offsetHeight
+    canvas_box.style.position = "absolute"
+
+    document.body.append(canvas_box)
+    var ctx = canvas_box.getContext("2d")
+    ctx.strokeStyle = "#0000FF"
+    ctx.lineWidth = 7;
 
     var webWorker = new Worker('src/faceDetectWorker.js')
 
@@ -70,6 +79,12 @@ video.addEventListener('play', () => {
             console.log('detectY = ', detectY)
             video.style.marginLeft = -detectX + "px"
             video.style.marginTop = (-detectY + 50) + "px"
+
+            //Draw detection            
+            ctx.clearRect(0, 0, canvas_box.width, canvas_box.height)
+            ctx.beginPath();
+            ctx.rect(detectX, detectY, detectWidth, detectHeight)
+            ctx.stroke()
           }
         }
       } catch (err) {
